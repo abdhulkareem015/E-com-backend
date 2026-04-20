@@ -60,40 +60,35 @@
 
 require('dotenv').config();
 const express = require("express");
-const fs=require("fs");
 const app = express();
-const cartRouter = require('./route/cart');
-const ordersRouter = require('./route/orders');
 const authmiddleware = require("./middleware/authmiddleware");
-const productsRouter=require("./route/products");
-const studentsRouter=require("./route/students");
-const authRouter=require("./route/auth");
-// const blogsRouter=require("./routes/blog");
-const cors=require("cors");
+const blogsRouter = require("./route/blogs");
+const authRouter = require("./route/auth");
+const cors = require("cors");
 
-const createDB=require("./config/db");
+const createDB = require("./config/db");
 createDB();
 
-app.use(express.json());      //middleware -> it is a process which is between request and respond
-app.use(cors());
+app.use(express.json());
+app.use(cors(
+    {
+        origin: "*",
+        credentials: true
+    }
+));
 
-app.use((req,res,next)=>{
-    console.log(`${req.method} ${req.url}`)
-    next();                 //Pass to next middleware/route
-})
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
 
-app.use("/products",productsRouter)
-app.use("/students",studentsRouter)
-app.use("/auth",authRouter)
-app.use('/cart', cartRouter); // Simple file-based cart
-app.use('/orders', ordersRouter);
+app.use("/blogs", blogsRouter);
+app.use("/auth", authRouter);
 
-app.get("/profile", authmiddleware, (req,res) => {
-    res.status(200).json({ message: "Profile",userData:req.userData });
-}); // Simple file-based cart
-
-// app.use("/blogs",blogsRouter)
+app.get("/profile", authmiddleware, (req, res) => {
+    res.status(200).json({ message: "Profile", userData: req.userData });
+});
 
 app.listen(process.env.PORT, () => {
-    console.log(`"Server running at http://localhost:3000"${process.env.PORT}`)
+    console.log(`"Server running at http://localhost:3000"${process.env.PORT}`);
 });
